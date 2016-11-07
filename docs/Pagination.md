@@ -1,7 +1,7 @@
 ## Pagination class
 
 ### Description
-Helper class of QueryTransformer to work with pagination. Can be accessed via the [QueryTransformer](/QueryTransformer.md).*pagination* property.
+Helper class of QueryTransformer to work with pagination. Can be accessed via the [QueryTransformer](/docs/QueryTransformer.md).*pagination* property.
 
 ### Properties:
 Name         | Type          | Description
