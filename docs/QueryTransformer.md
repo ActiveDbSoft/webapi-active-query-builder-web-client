@@ -17,12 +17,12 @@ QueryTransformer | url: string | Creates new instance of the QueryTransformer cl
 Name         | Type          | Description
 ------------ | ------------- | -------------
 url (read-only) | string | Gets URL of the server access point to exchange data with.
-filter (read-only) | [Filter](~/docs/Filter.md) | Helper class to manipulate with filter conditions.
-sortings (read-only) | [Sorting](~/docs/Sorting.md) | Helper class to manipulate with sortings.
-hiddenColumns (read-only) | [HiddenColumn](~/docs/HiddenColumn.md) | Helper class to manipulate with hidden columns.
-pagination (read-only) | [Pagination](~/docs/Pagination.md) | Helper class to apply pagination.
-totals (read-only) | [Total](~/docs/Total.md) | Helper class to define totals.
-criteriaBuilder (read-only) | [CriteriaBuilder](~/docs/CriteriaBuilder.md) | Gets access to the Criteria Builder visual control to define filter conditions.
+filter (read-only) | [Filter](/Filter.md) | Helper class to manipulate with filter conditions.
+sortings (read-only) | [Sorting](/Sorting.md) | Helper class to manipulate with sortings.
+hiddenColumns (read-only) | [HiddenColumn](/HiddenColumn.md) | Helper class to manipulate with hidden columns.
+pagination (read-only) | [Pagination](/Pagination.md) | Helper class to apply pagination.
+totals (read-only) | [Total](/Total.md) | Helper class to define totals.
+criteriaBuilder (read-only) | [CriteriaBuilder](/CriteriaBuilder.md) | Gets access to the Criteria Builder visual control to define filter conditions.
 
 ### Methods:
 Name         | Parameters    | Return value  | Description
@@ -33,8 +33,8 @@ saveState | - | string | Gets the component's state to save it between work sess
 loadState | state: string  | - | Loads the component's state on resuming work session.
 clear | - | - | Deletes all transformation instructions.
 clearAllForColumn | columnName: string  | - | Deletes all instructions for a column
-getColumnList | - | array() [Column](~/docs/Column.md) | Returns array of loaded columns.
-columnByName | columnName: string | [Column](~/docs/Column.md) | Returns Column object by column name.
+getColumnList | - | array() [Column](/Column.md) | Returns array of loaded columns.
+columnByName | columnName: string | [Column](/Column.md) | Returns Column object by column name.
 
 ### Events:
 Name         | Parameters    | Description

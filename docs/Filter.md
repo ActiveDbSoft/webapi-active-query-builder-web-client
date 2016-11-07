@@ -1,6 +1,6 @@
 ## Filter class
 ### Description
-Helper class of QueryTransformer to work with conditions. Can be accessed via the [QueryTransformer](~/docs/QueryTransformer.md).*filter* property.
+Helper class of QueryTransformer to work with conditions. Can be accessed via the [QueryTransformer](/QueryTransformer.md).*filter* property.
 
 ### Remarks
 You can use chaining when calling methods of this class as most of them return 'self', e.g.:
@@ -30,8 +30,8 @@ endsWith | columnName: string, value | Filter (self) | Adds new condition for a 
 notEndWith | columnName: string, value | Filter (self) | Adds new condition for a column not to end with the specified value.
 isEmpty | columnName: string | Filter (self) | Adds new condition for a column to be an empty string.
 isNotEmpty | columnName: string | Filter (self) | Adds new condition for a column not to be an empty string.
-addFilter | columnName: string, operator: [conditionalOperators](~/docs/ConditionalOperators.md), values: array | Filter (self) | Adds new condition for a column with the specified conditional operator and appropriate values applied to it.
-add | Condition: [FilterCondition](~/docs/FilterCondition.md) | Filter (self) | Adds condition with parameters specified via the Condition object.
-add | ConditionGroup: [FilterConditionGroup](~/docs/FilterConditionGroup.md) | Filter (self) | Adds group of conditions. Note that conditions and nested groups in this group must be defined before adding it to the filter. Further modifications will be ignored.
+addFilter | columnName: string, operator: [conditionalOperators](/ConditionalOperators.md), values: array | Filter (self) | Adds new condition for a column with the specified conditional operator and appropriate values applied to it.
+add | Condition: [FilterCondition](/FilterCondition.md) | Filter (self) | Adds condition with parameters specified via the Condition object.
+add | ConditionGroup: [FilterConditionGroup](/FilterConditionGroup.md) | Filter (self) | Adds group of conditions. Note that conditions and nested groups in this group must be defined before adding it to the filter. Further modifications will be ignored.
 clear | - | - | Deletes all conditions and nested groups.
-getFilter | - | [FilterConditionGroup](~/docs/FilterConditionGroup.md) | Returns a copy of filters applied to resultset. The ConditionGroup object contains a set of conditions and a set of nested condition groups.
+getFilter | - | [FilterConditionGroup](/FilterConditionGroup.md) | Returns a copy of filters applied to resultset. The ConditionGroup object contains a set of conditions and a set of nested condition groups.
