@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
-import DateTime from 'react-datetime';
+import DateTime from './myDateTime';
+import moment from 'moment';
 
 class Value extends Component {
     valueChanged() {
@@ -36,7 +37,15 @@ class Value extends Component {
         if(this.state === null || !this.state.showEditor)
             return;
 
-        let ref = (input) => {
+        const type = this._getInputType(this.props.type);
+
+        if(type === 'datetime' || type === 'time')
+            return ::this._renderDateTime(type);
+
+        return ::this._renderInput(type);
+    }
+    _renderInput(type) {
+        const ref = (input) => {
             if (input != null) {
                 input.focus();
                 input.value = this.props.value || '';
@@ -44,31 +53,42 @@ class Value extends Component {
             this._input = input
         };
 
-        const type = this._getInputType(this.props.type);
-
-        if(type === 'datetime' || type === 'time') {
-            return <DateTime
-                ref={(input) => {
-                    if(input !== null) {
-                        input.openCalendar();
-                        this._input = input;
-                    }
-                }}
-                dateFormat={type === 'datetime'}
-                timeFormat="HH:mm:ss"
-                onBlur={::this.valueChanged}
-                onKeyUp={::this.keyUpHandler}
-                defaultValue={this.props.value || new Date()} />
-        }
-
         const props = {
-            ref: ref,
+            ref,
+            type,
             onBlur: ::this.valueChanged,
-            onKeyUp: ::this.keyUpHandler,
-            type
+            onKeyUp: ::this.keyUpHandler
         };
 
         return <input {...props} />
+    }
+    _renderDateTime(type) {
+        const dateFormatString = 'DD/MM/YYYY';
+        const timeFormatString = 'HH:mm:ss';
+
+        const dateFormat = type === 'datetime' ? dateFormatString : false;
+        const timeFormat = type === 'datetime' || type === 'time' ? timeFormatString : false;
+
+        const defaultValue = this.props.value === undefined
+            ? moment(new Date(), `${dateFormatString} ${timeFormatString}`).startOf('day')
+            : moment(this.props.value, `${dateFormatString} ${timeFormatString}`);
+
+        const ref = (input) => {
+            if(input !== null) {
+                input.openCalendar();
+                this._input = input;
+            }
+        };
+
+        const props = {
+            ref,
+            defaultValue,
+            dateFormat,
+            timeFormat,
+            onBlur: ::this.valueChanged
+        };
+
+        return <DateTime {...props} />
     }
     _getInputType(type) {//todo дублирование с функцией _getJSType
         switch (type) {

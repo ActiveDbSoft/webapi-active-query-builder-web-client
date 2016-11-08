@@ -31,7 +31,6 @@ class QueryTransformer {
         this._store.dispatch( actions.setTransformer(this) );
 
         this._store.subscribe(() => {
-            console.log(this._store.getState());
             this.emit('changed', this);
         });
 

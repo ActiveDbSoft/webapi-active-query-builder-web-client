@@ -1,5 +1,4 @@
 ## QueryTransformer class
-
 ### Description
 Non-visual object to exchange data with the server. Gets list of columns from the server and sends transformation directives to the server.
 

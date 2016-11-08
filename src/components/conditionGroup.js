@@ -130,13 +130,15 @@ class ConditionGroup extends Component {
         if(mod === undefined)
             return;
 
-        return <div className={`criteria-builder__button
+        return (
+            <div className={`criteria-builder__button
                                 criteria-builder__button--${mod}
                                 criteria-builder__button--group
                                 criteria-builder__list-opener`}
                     onClick={(e) => {
                     ::this.openGroupFunctionsList(e.nativeEvent.layerX, e.nativeEvent.layerY);
-                 }}>.</div>;
+                 }}>.</div>
+        )
     }
     renderBottomButton(junc) {
         return (

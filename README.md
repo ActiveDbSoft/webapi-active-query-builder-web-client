@@ -3,12 +3,12 @@
 Ready-to-use JavaScript library that helps to  implement **ad-hoc SQL query builder** for non-technical end users. It uses  **Active Query Builder Web API**, a cloud service for SQL query creation, analysis and modification. 
 
 ## Compatibility
-Web browser     | Internet Explorer | Chrome | Mozilla | Opera | Safari
+Web browser     | Internet Explorer | Chrome | Firefox | Opera | Safari
 --------------- | ----------------- | ------ | ------- | ----- | ------ 
-Minimal version | 10                | 30     | 5       | 6     | 8
+Minimal version | 10                | 23     | 21       | 15     | 6
 
 ## Description
-Web Client for [Active Query Builder Web API]() is designed for the purpose of building full-featured web interface to work with result data of arbitrary SQL query. The component acts like **Online Visual Query Builder**: it allows your end-users to sort, filter and browse paginated data, by modifying the given SQL query according to user instructions.
+Web Client for [Active Query Builder Web API](https://webapi.activequerybuilder.com/) is designed for the purpose of building full-featured web interface to work with result data of arbitrary SQL query. The component acts like **Online Visual Query Builder**: it allows your end-users to sort, filter and browse paginated data, by modifying the given SQL query according to user instructions.
 
 ## Remarks
 The idea of this web client was to let the web users to browse data from large datasets using a full-featured interactive user interface to browse massive data sets while passing a minimum amount of data to the client. This is not another one HTML data grid control. You can use any third-party grid controls (which allow for the necessary customization) with Active Query Builder API or create your own one. This library lets send the user's query modification instructions to the server and receive data in return in an easy way.
@@ -31,7 +31,7 @@ To display the Criteria Builder control, call the QueryTransformer.criteriaBuild
 ##### How to link the QueryTransformer object to the grid control?
 Pass the user's actions to appropriate methods of the QueryTransformer class and call the QueryTransformer.*transform* method to send commands to the server. Handle the QueryTransformer.*dataReceived* event to display data in return.
 
-Read more details and find code samples in remarks for the [QueryTransformer](https://github.com/ActiveDbSoft/webapi-active-query-builder-web-client/blob/master/docs/QueryTransformer.md) class and it's helper classes.
+**Read more details and find code samples in remarks for the [QueryTransformer](https://github.com/ActiveDbSoft/webapi-active-query-builder-web-client/blob/master/docs/QueryTransformer.md) class and it's helper classes.**
 
 ##### How to configure the web server to work with the component?
 In order to operate with this library, a server access point that's capable to handle the following requests is necessary.
@@ -39,9 +39,9 @@ In order to operate with this library, a server access point that's capable to h
 Request         | Parameters    | Return value     | Description
 --------------- | ------------- | ---------------- | -------------
 GetQueryColumns | -             | ColumnList       | Returns list of query columns.
-TransformSql    | Transform     | <Free-form data> | Gets transformation commands from the client and returns data to be displayed.
+TransformSql    | Transform     | &lt;Free-form data&gt; | Gets transformation commands from the client and returns data to be displayed.
 
-*ColumnList* and *Transform* are JSON-encoded string of the structure described on the [Active Query Builder API Definition page](). See the [Active Query Builder Web API HTML Demo page]() to find sample of these handlers.
+*ColumnList* and *Transform* are JSON-encoded string of the structure described on the [Active Query Builder API Definition page](https://webapi.activequerybuilder.com/Home/Examples). See the [Active Query Builder Web API HTML Demo page](https://webapi.activequerybuilder.com/Demo) to find sample of these handlers.
 
 ## Class reference
 ### Classes
