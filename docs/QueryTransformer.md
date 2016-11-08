@@ -5,6 +5,27 @@ Non-visual object to exchange data with the server. Gets list of columns from th
 ### Remarks
 The *columnsLoaded* and *dataReceived* events must be handled in order to display data returned from the server.
 
+    const QT = new ActiveQueryBuilder.QueryTransformer("http://localhost:54459");
+    QT.pagination.skip( skipCount );
+    QT.pagination.take( takeCount );
+
+    var columns = [];
+    QT.on('columnsLoaded', function(_columns) {
+        columns = _columns;
+        QT.criteriaBuilder.init('criteriaBuilder');
+        QT.transform(); // send request to server
+    }
+
+    QT.on('sendTransform', function() {
+        //show loader
+    });
+
+    QT.on('dataReceived', function(rows) {
+        renderTable(columns, rows); //display data table
+        // hide loader
+    });
+    QT.loadColumns(); // get query columns
+
 To save and restore the user's instructions between work sessions use the *saveState* and *loadState* methods. After restoring the component's state you can read user's instructions using the appropriate get* methods to set up HTML controls. The Criteria Builder control will be restored automatically.
 
 ### Constructor:
