@@ -6,7 +6,7 @@ class Value extends Component {
     valueChanged() {
         let value;
 
-        if(this._input.state !== undefined) //работа с компонентом DateTime
+        if(this._input.state !== undefined) //check DateTime component
             value = this._input.state.inputValue;
         else
             value = this._input.value;
@@ -90,7 +90,7 @@ class Value extends Component {
 
         return <DateTime {...props} />
     }
-    _getInputType(type) {//todo дублирование с функцией _getJSType
+    _getInputType(type) {//todo equals _getJSType
         switch (type) {
             case 'number':
             case 'int':

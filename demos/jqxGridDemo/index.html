@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title id='Description'>This demo illustrates the basic functionality of the Grid plugin. The jQWidgets Grid plugin offers rich support for interacting with data, including paging, grouping and sorting. 
+    </title>
+    <meta name="description" content="JavaScript Grid with rich support for Data Filtering, Paging, Editing, Sorting and Grouping" />
+
+    <link rel="stylesheet" href="./jqwidgets/styles/jqx.base.css" type="text/css" />
+    <link rel="stylesheet" href="./jqwidgets/styles/jqx.metro.css" type="text/css" />
+    <link rel="stylesheet" href="../../app/styles.css" type="text/css" />
+    <style>
+        #grid {
+            margin: 100px auto;
+        }
+
+        #pageSize {
+            float: right;
+        }
+		
+		.pager {
+			padding: 5px;
+		}
+		
+		.pager input {
+			height: 22px;
+		}
+		
+		.pager input:first-child {
+			margin-right: 5px;
+		}
+		
+		.aggr-result {
+			padding: 0 5px;
+		}
+		
+		.aggr-select {
+			height: 18px;
+		}
+    </style>
+
+    <script type="text/javascript" src="./scripts/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="./jqwidgets/jqx-all.js"></script>
+
+    <script type="text/javascript" src="../../app/activeQueryBuilder.js"></script>
+    <script>
+        var columns = [];
+
+        var QT = new ActiveQueryBuilder.QueryTransformer('http://webapiactivequerybuilder-test.cloudapp.net/Demo');
+
+        var defaultPageSize = 20;
+        function pagination(page, size) {
+			page = page || 1;
+			size = size || defaultPageSize;
+		
+            QT.pagination.skipCount = (page - 1) * size;
+            QT.pagination.takeCount = size;
+            QT.transform();
+        }
+
+        var customsortfunc = function (column, direction) {
+            QT.sortings.clear();
+            
+			if (direction != null) {
+				if (direction == 'ascending') direction = true;
+				if (direction == 'descending') direction = false;
+				QT.sortings.orderBy(column, direction ? 'acs'  : 'desc');
+            }
+			
+			QT.transform();
+        };
+
+        QT.on('columnsLoaded', function (_columns) {
+            columns = _columns;
+            QT.criteriaBuilder.init('criteriaBuilder');
+            QT.criteriaBuilder.autoApply = true;
+				
+			window.source = {
+                sort: customsortfunc,
+                datafields: columns,
+                datatype: "array"
+            };
+
+			window.adapter = new $.jqx.dataAdapter(source);
+				
+			$("#grid").jqxGrid({
+				width: 1000, 
+				height: 700,
+				theme: 'metro',
+				source: adapter,
+				showaggregates: true,
+				showstatusbar: true,
+				columns: columns.map(function (c) {
+					return {
+						text: c.name,
+						datafield: c.name,
+						aggregatesrenderer: function (aggregates) {								
+							var x = $('<div data-field="' + c.name + '" class="aggr-result">');
+							
+							x.append( $('<div><span>Total:</span><span class="aggr-text"></span></div>') );
+							x.append( createTotalSelect(c.name, c.type) );
+							
+							return x;
+						}
+					}
+				}),
+				pageable: true,
+				pagerrenderer: function() {
+					var page = (QT.pagination.skipCount / QT.pagination.takeCount) + 1 || 1;
+					var size = QT.pagination.takeCount || defaultPageSize;
+					
+					var element = $("<div class='pager'></div>");
+										
+					var currentPageInput = $('<input type="number" value="' + page + '" />').jqxInput();
+					var pageSizeInput = $('<input id="pageSize" type="number" value="' + size + '" />').jqxInput();
+					
+					currentPageInput.change(function() {
+						pagination( currentPageInput.val(), pageSizeInput.val() );
+					});
+					
+					pageSizeInput.change(function() {
+						pagination( currentPageInput.val(), pageSizeInput.val() );
+					});
+					
+					var leftButton = $("<button>Prev</button>").jqxButton();
+					leftButton.click(function() {
+						var newValue = parseInt(currentPageInput.val()) - 1;
+						currentPageInput.val(newValue);
+					});
+
+					var rightButton = $("<button>Next</button>").jqxButton();
+					rightButton.click(function() {
+						var newValue = parseInt(currentPageInput.val()) + 1;
+						currentPageInput.val(newValue);
+					});
+
+					return element.append(currentPageInput).append(leftButton).append(rightButton).append(pageSizeInput);
+				},
+				sortable: true
+			});
+				
+			pagination();
+        });
+
+        QT.on('dataReceived', function (result) {
+			adapter.beginUpdate();
+			
+			source.localdata = result.Data;
+			
+			adapter.endUpdate(true);
+			
+			$('#grid').jqxGrid({ pagesize: result.Data.length}); 
+		
+			if(result.Totals) {
+				
+				var totals = QT.totals.getTotals();
+				for (var i = 0; i < totals.length; i++) {
+					var text = '';
+					if (result.Totals[0] !== undefined)
+						text = result.Totals[0]['Column' + (i + 1)];
+
+					$('[data-field="' + totals[i].name + '"]').find('.aggr-text').text(text);
+				}
+			}
+		});
+		
+		function createTotalSelect(dataField, dataType) {
+			function createTotalOption(value) {
+				var total = QT.totals.getTotals().find(function(t) {
+					return t.name === dataField;
+				});
+				
+				var option = $('<option value="' + value + '">' + value + '</option>');
+				
+				if(total && total.func === value.toLowerCase())
+					option.attr('selected', 'selected');					
+				
+				return option;
+			}
+
+			var select = $('<select>');
+			select.addClass('aggr-select');
+			select.attr('data-field', dataField);
+
+			select.append(createTotalOption(""));
+			select.append(createTotalOption("COUNT"));
+			select.append(createTotalOption("MAX"));
+			select.append(createTotalOption("MIN"));
+
+			if (dataType === "int") {
+				createTotalOption("AVG").insertAfter(select.children().first());
+				select.append(createTotalOption("SUM"));
+			}
+
+			return select;
+		}
+		
+		$(document).on('change', '.aggr-select', function () {
+        var column = QT.columnByName($(this).attr('data-field'));
+        //QT.totals.removeTotal($(this).attr('data-field'), prevAggrValue);
+
+        switch (this.value) {
+            case 'AVG':
+                QT.totals.add(column.avg());
+                break;
+            case 'COUNT':
+                QT.totals.add(column.count());
+                break;
+            case 'MAX':
+                QT.totals.add(column.max());
+                break;
+            case 'MIN':
+                QT.totals.add(column.min());
+                break;
+            case 'SUM':
+                QT.totals.add(column.sum());
+                break;
+            case '':
+				$('[data-field="' + column.name + '"]').find('.aggr-text').text('');
+				return;
+        }
+
+        QT.transform();
+    });
+
+        QT.loadColumns();
+    </script>
+</head>
+<body class='default'>
+    <div id="criteriaBuilder"></div>
+    <div id='jqxWidget'>
+        <div id="grid"></div>
+     </div>
+</body>
+</html>

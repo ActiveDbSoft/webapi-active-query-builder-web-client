@@ -12,6 +12,7 @@ export default (store) => (next) => (action) => {
     xhr.open('POST', `${store.getState().url}/GetQueryColumns`, true);
 
     xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+	xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     xhr.send();
 
     xhr.onreadystatechange = function() {

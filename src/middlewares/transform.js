@@ -46,7 +46,7 @@ function filterTraversal(ConditionGroup) {
         const gr = stack.pop();
 
         for(let i = 0; i < gr.conditions.length; i++) {
-            gr.conditions[i].field = gr.conditions[i].columnName; //Из за разницы с названием в модели сваггера
+            gr.conditions[i].field = gr.conditions[i].columnName; //swagger model has columnName instead field
             gr.conditions[i].values = changeValues(gr.conditions[i].operator, gr.conditions[i].values);
             gr.conditions[i].conditionOperator = changeOperator(gr.conditions[i].operator);
         }

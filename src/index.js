@@ -394,6 +394,9 @@ class CriteriaBuilder {
         this._store = store;
     }
     init(id) {
+		if(document.getElementById(id) === null)
+			throw `Element with id="${id}" is not found`;
+		
         ReactDOM.render(
             <Provider store={this._store}>
                 <CriteriaBuilderJsx />
@@ -430,7 +433,7 @@ class CriteriaBuilder {
         return this;
     }
     _addConditionGroup(groupId, junctionType) {
-        this._dispatch( actions.addConditionGroup(groupId, new FilterConditionGroup(junctionType, groupId)) );//возможно избыточность groupId
+        this._dispatch( actions.addConditionGroup(groupId, new FilterConditionGroup(junctionType, groupId)) );//do i really need groupId?
         return this;
     }
     _clearConditionGroup(groupId) {

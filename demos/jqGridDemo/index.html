@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+	<link rel="stylesheet" href="./jquery-ui/jquery-ui.min.css" />
+	<link rel="stylesheet" href="./jqGrid/css/ui.jqgrid.css" />
+	<link rel="stylesheet" href="./jqGrid/css/ui.jqgrid-bootstrap.css" />
+	<link rel="stylesheet" href="./jqGrid/css/ui.jqgrid-bootstrap-ui.css" />
+	<link rel="stylesheet" href="../../app/styles.css" type="text/css" />
+	
+	<style>
+		#gbox_grid {
+            margin: 100px auto 0;
+        }
+		#last_pager {
+			display: none;
+		}
+		#pager, #aggregate-row {
+			width: 1000px;
+			margin: 0 auto;
+		}
+		#pager input {
+			width: 50px;
+			padding: 6px;
+			height: 18px;
+		}
+		#pageSize {
+            float: right;
+        }
+		.aggr-cell {
+			display: inline-block;
+		}
+	</style>
+	
+    <script src="./jqGrid/js/jquery-1.11.0.min.js"></script>
+    <script src="./jquery-ui/jquery-ui.min.js"></script>
+	<script src="./jqGrid/js/jquery.jqGrid.min.js"></script>
+	<script src="./jqGrid/js/grid.locale-en.js"></script>
+	
+	<script type="text/javascript" src="../../app/activeQueryBuilder.js"></script>
+
+	<script>
+		var columns = [];
+
+		var QT = new ActiveQueryBuilder.QueryTransformer('http://webapiactivequerybuilder-test.cloudapp.net/Demo');
+
+		var defaultPageSize = 5;
+		function pagination(page, size) {
+			page = page || 1;
+			size = size || defaultPageSize;
+		
+			QT.pagination.skipCount = (page - 1) * size;
+			QT.pagination.takeCount = size;
+			QT.transform();
+		}
+			
+		QT.on('columnsLoaded', function (_columns) {
+            columns = _columns;
+            QT.criteriaBuilder.init('criteriaBuilder');
+            QT.criteriaBuilder.autoApply = true;
+				
+			$('#grid').jqGrid({
+				datatype: 'local',
+				width: 1000,
+				height: 250,
+				regional : 'en',
+				colNames: columns.map(function(c) { return c.name }),
+				colModel: columns.map(function(c) {
+					return {
+						name: c.name,
+						index: c.name,
+						resizable: false
+					}
+				}),
+				multiselect: false,
+				caption: 'Manipulating Array Data',
+				onSortCol: function (index, iCol, direction) {
+					QT.sortings.clear();            
+					QT.sortings.orderBy(index, direction);
+					QT.transform();
+				}
+			});
+			
+			createAggregateRow();
+				
+			pagination();
+        });
+	
+		QT.on('dataReceived', function (result) {
+			$('#grid').jqGrid('clearGridData');
+			
+			for(var i=0; i <= result.Data.length; i++)
+				$("#grid").jqGrid('addRowData', i + 1 , result.Data[i]);
+				
+			var totals = QT.totals.getTotals();
+			for (var i = 0; i < totals.length; i++) {
+				var text = '';
+				if (result.Totals[0] !== undefined)
+					text = result.Totals[0]['Column' + (i + 1)];
+
+				$('.aggr-result[data-field="' + totals[i].name + '"]').text(text);
+			}
+		});
+		
+		function createPager() {			
+			var element = $("<div></div>");
+								
+			var currentPageInput = $('<input type="number" value="1" class="text ui-widget-content ui-corner-all" />');
+			var pageSizeInput = $('<input id="pageSize" type="number" value="' + defaultPageSize + '" class="text ui-widget-content ui-corner-all" />');
+			
+			currentPageInput.change(function() {
+				pagination( currentPageInput.val(), pageSizeInput.val() );
+			});
+			
+			pageSizeInput.change(function() {
+				pagination( currentPageInput.val(), pageSizeInput.val() );
+			});
+			
+			var leftButton = $("<button>Prev</button>").button();
+			leftButton.click(function() {
+				var newValue = parseInt(currentPageInput.val()) - 1;
+				currentPageInput.val(newValue).change();
+			});
+
+			var rightButton = $("<button>Next</button>").button();
+			rightButton.click(function() {
+				var newValue = parseInt(currentPageInput.val()) + 1;
+				currentPageInput.val(newValue).change();
+			});
+
+			element.append(currentPageInput).append(leftButton).append(rightButton).append(pageSizeInput)
+			
+			$('#pager').html(element);
+		}
+		
+		function createAggregateRow() {
+			$('#aggregate-row').append( $('<div>Totals:</div>') );
+			
+			$.each(columns, function (i, item) {
+				var dataField = 'data-field="' + item.name + '"';
+				
+				var select = _createTotalSelect(item.name, item.type);
+				
+				var aggrResult = $('<span class="aggr-result" ' + dataField + '></span>');
+				
+				var aggrCell = $('<div class="aggr-cell">').append(select).append(aggrResult);
+				
+				$('#aggregate-row').append(aggrCell);
+			});
+			
+			$('.aggr-cell').width(100 / columns.length + '%');
+		}
+		
+		function _createTotalSelect(dataField, dataType) {
+			function createTotalOption(value) {
+				return $('<option value="' + value + '">' + value + '</option>');
+			}
+
+			var select = $('<select>');
+			select.addClass('aggr-select');
+			select.attr('data-field', dataField);
+
+			select.append(createTotalOption(""));
+			select.append(createTotalOption("COUNT"));
+			select.append(createTotalOption("MAX"));
+			select.append(createTotalOption("MIN"));
+
+			if (dataType === "int") {
+				createTotalOption("AVG").insertAfter(select.children().first());
+				select.append(createTotalOption("SUM"));
+			}
+
+			return select;
+		}
+		
+		var prevAggrValue;
+		$(document).on('focus', '.aggr-select', function () {
+			prevAggrValue = this.value;
+		});
+		
+		$(document).on('change', '.aggr-select', function () {
+			var column = QT.columnByName($(this).attr('data-field'));
+			QT.totals.removeTotal($(this).attr('data-field'), prevAggrValue);
+
+			switch (this.value) {
+				case 'AVG':
+					QT.totals.add(column.avg());
+					break;
+				case 'COUNT':
+					QT.totals.add(column.count());
+					break;
+				case 'MAX':
+					QT.totals.add(column.max());
+					break;
+				case 'MIN':
+					QT.totals.add(column.min());
+					break;
+				case 'SUM':
+					QT.totals.add(column.sum());
+					break;
+				case '':
+					$('.aggr-result[data-field="' + $(this).attr('data-field') + '"]').text('');
+					break;
+			}
+
+			QT.transform();
+		});
+		
+		$(document).ready(function() {
+			createPager();	
+			QT.loadColumns();
+		});
+	</script>
+	
+	</head>
+<body>
+	<div id="criteriaBuilder"></div>
+    <table id="grid"></table>
+	<div id="aggregate-row" class="ui-jqgrid-pager ui-state-default ui-corner-bottom"></div>	
+	<div id="pager" class="ui-jqgrid-pager ui-state-default ui-corner-bottom"></div>	
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

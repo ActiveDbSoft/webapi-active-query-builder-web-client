@@ -30,7 +30,7 @@ class Condition extends Component {
             this.props.changeConditionOperator(this.props.filter._id, operator.name);
         });
     }
-    _getJSType(type) { //todo дублирование с функцией _getInputType
+    _getJSType(type) { //todo equals _getInputType
         switch (type) {
             case 'number':
             case 'int':
