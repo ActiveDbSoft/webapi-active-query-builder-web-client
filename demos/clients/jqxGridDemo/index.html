@@ -7,7 +7,7 @@
 
     <link rel="stylesheet" href="./jqwidgets/styles/jqx.base.css" type="text/css" />
     <link rel="stylesheet" href="./jqwidgets/styles/jqx.metro.css" type="text/css" />
-    <link rel="stylesheet" href="../../app/styles.css" type="text/css" />
+    <link rel="stylesheet" href="../../../app/styles.css" type="text/css" />
     <style>
         #grid {
             margin: 100px auto;
@@ -41,11 +41,11 @@
     <script type="text/javascript" src="./scripts/jquery-1.11.1.min.js"></script>
     <script type="text/javascript" src="./jqwidgets/jqx-all.js"></script>
 
-    <script type="text/javascript" src="../../app/activeQueryBuilder.js"></script>
+    <script type="text/javascript" src="../../../app/activeQueryBuilder.js"></script>
     <script>
         var columns = [];
 
-        var QT = new ActiveQueryBuilder.QueryTransformer('http://webapiactivequerybuilder-test.cloudapp.net/Demo');
+        var QT = new ActiveQueryBuilder.QueryTransformer('http://localhost:3000');
 
         var defaultPageSize = 20;
         function pagination(page, size) {
@@ -154,9 +154,8 @@
 				
 				var totals = QT.totals.getTotals();
 				for (var i = 0; i < totals.length; i++) {
-					var text = '';
-					if (result.Totals[0] !== undefined)
-						text = result.Totals[0]['Column' + (i + 1)];
+					var totalName = totals[i].name + totals[i].func.capitalizeFirstLetter(); 				
+				var text = result.Totals[totalName];
 
 					$('[data-field="' + totals[i].name + '"]').find('.aggr-text').text(text);
 				}
@@ -193,10 +192,15 @@
 
 			return select;
 		}
+
+var prevAggrValue;
+		$(document).on('focus', '.aggr-select', function () {
+			prevAggrValue = this.value;
+		});
 		
 		$(document).on('change', '.aggr-select', function () {
         var column = QT.columnByName($(this).attr('data-field'));
-        //QT.totals.removeTotal($(this).attr('data-field'), prevAggrValue);
+        QT.totals.removeTotal($(this).attr('data-field'), prevAggrValue);
 
         switch (this.value) {
             case 'AVG':
@@ -221,6 +225,10 @@
 
         QT.transform();
     });
+
+	String.prototype.capitalizeFirstLetter = function() {
+		return this.charAt(0).toUpperCase() + this.slice(1);
+	};
 
         QT.loadColumns();
     </script>

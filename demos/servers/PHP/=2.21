@@ -1,0 +1,18 @@
+Reading package lists...
+Building dependency tree...
+Reading state information...
+libc6 is already the newest version.
+The following packages were automatically installed and are no longer required:
+  apache2-data gyp libc-ares-dev libc-ares2 libjs-node-uuid libv8-3.14-dev
+  libv8-3.14.5 node-abbrev node-ansi node-archy node-async node-block-stream
+  node-combined-stream node-cookie-jar node-delayed-stream node-forever-agent
+  node-form-data node-fstream node-fstream-ignore node-github-url-from-git
+  node-glob node-graceful-fs node-gyp node-inherits node-ini
+  node-json-stringify-safe node-lockfile node-lru-cache node-mime
+  node-minimatch node-mkdirp node-mute-stream node-node-uuid node-nopt
+  node-normalize-package-data node-npmlog node-once node-osenv node-qs
+  node-read node-read-package-json node-request node-retry node-rimraf
+  node-semver node-sha node-sigmund node-slide node-tar node-tunnel-agent
+  node-which
+Use 'apt-get autoremove' to remove them.
+0 upgraded, 0 newly installed, 0 to remove and 254 not upgraded.

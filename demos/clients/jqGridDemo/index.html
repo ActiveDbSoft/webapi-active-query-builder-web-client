@@ -7,7 +7,7 @@
 	<link rel="stylesheet" href="./jqGrid/css/ui.jqgrid.css" />
 	<link rel="stylesheet" href="./jqGrid/css/ui.jqgrid-bootstrap.css" />
 	<link rel="stylesheet" href="./jqGrid/css/ui.jqgrid-bootstrap-ui.css" />
-	<link rel="stylesheet" href="../../app/styles.css" type="text/css" />
+	<link rel="stylesheet" href="../../../app/styles.css" type="text/css" />
 	
 	<style>
 		#gbox_grid {
@@ -38,12 +38,12 @@
 	<script src="./jqGrid/js/jquery.jqGrid.min.js"></script>
 	<script src="./jqGrid/js/grid.locale-en.js"></script>
 	
-	<script type="text/javascript" src="../../app/activeQueryBuilder.js"></script>
+	<script type="text/javascript" src="../../../app/activeQueryBuilder.js"></script>
 
 	<script>
 		var columns = [];
 
-		var QT = new ActiveQueryBuilder.QueryTransformer('http://webapiactivequerybuilder-test.cloudapp.net/Demo');
+		var QT = new ActiveQueryBuilder.QueryTransformer('http://localhost:3000');
 
 		var defaultPageSize = 5;
 		function pagination(page, size) {
@@ -95,9 +95,8 @@
 				
 			var totals = QT.totals.getTotals();
 			for (var i = 0; i < totals.length; i++) {
-				var text = '';
-				if (result.Totals[0] !== undefined)
-					text = result.Totals[0]['Column' + (i + 1)];
+				var totalName = totals[i].name + totals[i].func.capitalizeFirstLetter(); 				
+				var text = result.Totals[totalName];
 
 				$('.aggr-result[data-field="' + totals[i].name + '"]').text(text);
 			}
@@ -211,6 +210,10 @@
 			createPager();	
 			QT.loadColumns();
 		});
+
+		String.prototype.capitalizeFirstLetter = function() {
+			return this.charAt(0).toUpperCase() + this.slice(1);
+		};
 	</script>
 	
 	</head>
