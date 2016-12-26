@@ -8,24 +8,48 @@ export default (store) => (next) => (action) => {
     store.dispatch(fetchingColumns());
     store.getState().transformer.emit('startColumnsLoading');
 
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', `${store.getState().url}/GetQueryColumns`, true);
+    const url = `${store.getState().url}/GetQueryColumns`;
 
-    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-	xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    xhr.send();
+    const successFunc = (cols) => {
+        const columns = cols.map(c => new Column(c.name || c.Name, c.dataType || c.DataType));
 
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState != 4) return;
-
-        if (xhr.status === 200) {
-            const columns = JSON.parse(xhr.responseText).map(c => new Column(c.name || c.Name, c.dataType || c.DataType));
-
-            store.dispatch(receivedColumns(columns));
-            store.getState().transformer.emit('columnsLoaded', columns);
-        } else {
-            store.dispatch(failedFetchingColumns(xhr.statusText));
-            throw `${xhr.status}: ${xhr.statusText}`;
-        }
+        store.dispatch(receivedColumns(columns));
+        store.getState().transformer.emit('columnsLoaded', columns);
     };
+
+    const errorFunc = (status, text) => {
+        store.dispatch(failedFetchingColumns(text));
+        throw `${status}: ${text}`;
+    };
+
+    if(window.fetch) {
+        fetch(url, {
+            method: 'POST',
+            headers: new Headers({
+                'X-Requested-With': 'XMLHttpRequest'
+            })
+        })
+        .then(res => {
+            res.json().then(json => successFunc(json));
+        })
+        .catch(res => {
+            console.log(res);
+        });
+    } else {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', url, true);
+
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        xhr.send();
+
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState != 4) return;
+                successFunc( JSON.parse(xhr.responseText) );
+            if (xhr.status === 200) {
+
+            } else {
+                errorFunc(xhr.status, xhr.statusText);
+            }
+        };
+    }
 }

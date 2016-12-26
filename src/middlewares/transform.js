@@ -17,24 +17,48 @@ export default (store) => (next) => (action) => {
         hiddenColumns: state.hiddenColumns
     };
 
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', `${store.getState().url}/TransformSql`, true);
+    const url = `${store.getState().url}/TransformSql`;
 
-    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    xhr.send(JSON.stringify(model));
+    const successFunc = (data) => {
+        store.dispatch(successTranforming());
+        store.getState().transformer.emit('dataReceived', data);
+    };
 
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState != 4) return;
+    const errorFunc = (status, text) => {
+        store.dispatch(failedTransforming(text));
+        throw `${status}: ${text}`;
+    };
 
-        if (xhr.status === 200) {
-            const result = JSON.parse(xhr.responseText);
+    if(window.fetch) {
+        fetch(url, {
+            method: 'POST',
+            body: JSON.stringify(model),
+            headers: new Headers({
+                'X-Requested-With': 'XMLHttpRequest',
+                'Content-Type': 'application/json;charset=UTF-8'
+            })
+        })
+        .then(res => {
+            res.json().then(json => successFunc(json));
+        })
+        .catch(res => {
+            console.log(res);
+        });
+    } else {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', url, true);
 
-            store.dispatch(successTranforming());
-            store.getState().transformer.emit('dataReceived', result);
-        } else {
-            store.dispatch(failedTransforming(xhr.statusText));
-            throw `${xhr.status}: ${xhr.statusText}`;
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        xhr.send(JSON.stringify(model));
+
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState != 4) return;
+                successFunc( JSON.parse(xhr.responseText) );
+            if (xhr.status === 200) {
+
+            } else {
+                errorFunc(xhr.status, xhr.statusText);
+            }
         }
     }
 }
