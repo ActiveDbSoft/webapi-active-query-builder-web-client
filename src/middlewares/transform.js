@@ -13,7 +13,18 @@ export default (store) => (next) => (action) => {
         pagination: state.pagination,
         totals: state.totals,
         sortings: state.sortings,
-        filter: filterTraversal( JSON.parse( JSON.stringify(state.filter) ) ),
+        filter: filterTraversal( JSON.parse( JSON.stringify(state.filter, (key, value) => {
+            if(key === '_id')
+               return undefined;
+            else if(key === '_order')
+                return undefined;
+            else if(key === '_parentId')
+                return undefined;
+            else if(key === '_type')
+                return undefined;
+            else
+                return value;
+        }) ) ),
         hiddenColumns: state.hiddenColumns
     };
 
