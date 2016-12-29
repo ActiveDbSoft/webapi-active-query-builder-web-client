@@ -15,8 +15,8 @@ export default (store) => (next) => (action) => {
         sortings: state.sortings,
         filter: filterTraversal( JSON.parse( JSON.stringify(state.filter, (key, value) => {
             if(key === 'junctionType')
-                return value.charAt(0).toUpperCase() + value.slice(1); //todo case sensitive
-            if(key === '_id')
+                return value.toUpperCase(); //todo case sensitive
+	    else if(key === '_id')
                return undefined;
             else if(key === '_order')
                 return undefined;

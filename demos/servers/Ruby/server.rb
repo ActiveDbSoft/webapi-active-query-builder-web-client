@@ -58,8 +58,9 @@ class TransformSqlServlet < WEBrick::HTTPServlet::AbstractServlet
 		transform["sql"] = $sql
 
 		api = create_api_instance() 
-		result = api.transform_sql_post(transform)
 
+		result = api.transform_sql_post(transform)
+		
 		data = get_data_from_sql_server result.sql, result.totals
 
 		setup_header(res)
