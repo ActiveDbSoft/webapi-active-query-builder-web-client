@@ -5,6 +5,8 @@ export function converter(key, value) {
         return value.toUpperCase();
     if(key === 'aggregate')
         return value.toUpperCase();
+    if(key === 'operator')
+        return value.toUpperCase();
     else if(key === '_id')
         return undefined;
     else if(key === '_order')
