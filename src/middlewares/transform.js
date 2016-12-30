@@ -1,4 +1,5 @@
 import { startTranforming, failedTransforming, successTranforming } from '../actions/sqlActions'
+import { converter } from './_jsonConverters';
 
 export default (store) => (next) => (action) => {
     if(action.type !== 'TRANSFORM_QUERY')
@@ -11,22 +12,9 @@ export default (store) => (next) => (action) => {
 
     const model = {
         pagination: state.pagination,
-        totals: state.totals,
+        totals: state.totals,//todo
         sortings: state.sortings,
-        filter: filterTraversal( JSON.parse( JSON.stringify(state.filter, (key, value) => {
-            if(key === 'junctionType')
-                return value.toUpperCase(); //todo case sensitive
-	    else if(key === '_id')
-               return undefined;
-            else if(key === '_order')
-                return undefined;
-            else if(key === '_parentId')
-                return undefined;
-            else if(key === '_type')
-                return undefined;
-            else
-                return value;
-        }) ) ),
+        filter: filterTraversal( JSON.parse( JSON.stringify(state.filter) ) ),
         hiddenColumns: state.hiddenColumns
     };
 
@@ -45,7 +33,7 @@ export default (store) => (next) => (action) => {
     if(window.fetch) {
         fetch(url, {
             method: 'POST',
-            body: JSON.stringify(model),
+            body: JSON.stringify(model, converter),
             headers: new Headers({
                 'X-Requested-With': 'XMLHttpRequest',
                 'Content-Type': 'application/json;charset=UTF-8'
