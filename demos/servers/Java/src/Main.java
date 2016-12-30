@@ -147,22 +147,22 @@ public class Main {
 
             ResultSet set = statement.executeQuery(sql);
 
-            String result = "{ \"Data\": " + to_json(set);
+            String result = "{ \"Data\": " + to_json(set, false);
 
             if(totalsSql != null && !totalsSql.isEmpty()) {
                 set = statement.executeQuery(totalsSql);
-                result = result.concat(", \"Totals\": " + to_json(set));
+                result = result.concat(", \"Totals\": " + to_json(set, true) );
             }
 
             return result + " }";
         }
 
-        private String to_json(ResultSet set) throws SQLException {
+        private String to_json(ResultSet set, Boolean singleRow) throws SQLException {
             ResultSetMetaData metaData = set.getMetaData();
 
             int colCount = metaData.getColumnCount();
 
-            String json = "[";
+            String json = singleRow ? "" : "[";
             while(set.next()) {
                 json = json.concat("{");
                 for(int i = 1; i <= colCount; i++) {
@@ -175,7 +175,10 @@ public class Main {
                 }
                 json = json.concat("},");
             }
-            json = json.substring(0, json.length()-1).concat("]");
+            if(singleRow)
+                json = json.substring(0, json.length()-1);
+            else
+                json = json.substring(0, json.length()-1).concat("]");
 
             return json;
         }
