@@ -8,6 +8,16 @@ export function orderBy(field, order) {
     }
 }
 
+export function changeOrder(field, order) {
+    return {
+        type: 'CHANGE_ORDER',
+        payload: {
+            field,
+            order
+        }
+    }
+}
+
 export function removeOrderBy(field) {
     return {
         type: 'REMOVE_ORDER_BY',

@@ -209,6 +209,10 @@ class Sorting {
         this._store.dispatch( actions.orderBy(columnName, order) );
         return this;
     }
+    changeOrder(columnName, order) {
+        this._store.dispatch( actions.changeOrder(columnName, order) );
+        return this;
+    }
     removeOrderBy(columnName) {
         this._store.dispatch( actions.removeOrderBy(columnName) );
         return this;
